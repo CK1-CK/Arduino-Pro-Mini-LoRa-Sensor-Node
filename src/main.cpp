@@ -9,12 +9,15 @@
 
 
 
-void interruptDoorFunction()
+void interruptDoorFunction() //Interrupt Function for DoorSwitch
 {
   door_state = digitalRead(PIN_DOOR_SWITCH);
   watchdog=0; //Real Alarm
 
-  //#todo: Lora Paket senden
+  //Lora Paket senden
+  LoRaWANDo_send(&sendjob);
+
+  watchdog=1; //Restet Watchdog
 }
 
 void setup()
@@ -31,7 +34,7 @@ void setup()
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   LoRaWANSetup();
 
-  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE); //Interrupt Function for DoorSwitch
 }
 
 void loop()

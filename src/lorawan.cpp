@@ -203,17 +203,11 @@ void LoRaWANDo(void)
 void LoRaWANGetData()
 {
     uint8_t vcc = (ReadVcc() / 10) - 200;
-
-    uint8_t door = door_state; //#todo
    
-
     LORA_DATA[0] = vcc; //VCC Voltage
-    LORA_DATA[1] = watchdog;
-    LORA_DATA[2] = door;
-    LORA_DATA[3] = 0xff;
-
-
-    watchdog = 1; //Reset Watchdog 
+    LORA_DATA[1] = watchdog; //WatchDog
+    LORA_DATA[2] = door_state; //Door open/closed
+    LORA_DATA[3] = 0xff; //EOF
 }
 
 void LoRaWANVersion()
