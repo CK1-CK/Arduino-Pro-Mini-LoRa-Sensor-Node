@@ -7,6 +7,16 @@
 #include "version.h"
 #include "version_build.h"
 
+
+
+void interruptDoorFunction()
+{
+  door_state = digitalRead(PIN_DOOR_SWITCH);
+  watchdog=0; //Real Alarm
+
+  //#todo: Lora Paket senden
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -16,11 +26,12 @@ void setup()
   PrintResetReason();
   LoRaWANVersion();
   delay(3000);
-  DHTSENSOR.setup(PIN_DHT);
   PowerDownSetupWatchdog();
   Setup_Pins();
-  Blink_Info_LED();
+  Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   LoRaWANSetup();
+
+  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE);
 }
 
 void loop()

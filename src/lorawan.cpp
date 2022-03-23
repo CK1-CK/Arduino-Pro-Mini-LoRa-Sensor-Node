@@ -202,46 +202,18 @@ void LoRaWANDo(void)
 
 void LoRaWANGetData()
 {
-    ReadDHTSensor();
-
     uint8_t vcc = (ReadVcc() / 10) - 200;
 
-    uint8_t humidity_lora = HUMIDITY;
+    uint8_t door = door_state; //#todo
+   
 
-    int16_t temp = (TEMPERATURE * 10);
+    LORA_DATA[0] = vcc; //VCC Voltage
+    LORA_DATA[1] = watchdog;
+    LORA_DATA[2] = door;
+    LORA_DATA[3] = 0xff;
 
-    if (isnan(TEMPERATURE))
-    {
-        LORA_DATA[2] = 255;
-        LORA_DATA[3] = 255;
-    }
-    else
-    {
-        LORA_DATA[2] = temp >> 8;
-        LORA_DATA[3] = temp & 0xFF;
-    }
 
-    if (isnan(HUMIDITY))
-    {
-        LORA_DATA[1] = 255;
-    }
-    else
-    {
-        float check = HUMIDITY - humidity_lora;
-        LORA_DATA[1] = humidity_lora;
-
-        // Bit 8 for decimal 1 = 0.5
-        if (check > 0.251 && check < 0.751)
-        {
-            LORA_DATA[1] |= (1 << 7);
-        }
-        else if (check > 0.751)
-        {
-            LORA_DATA[1] = LORA_DATA[1] + 1;
-        }
-    }
-
-    LORA_DATA[0] = vcc;
+    watchdog = 1; //Reset Watchdog 
 }
 
 void LoRaWANVersion()
