@@ -1,13 +1,9 @@
 function decodeUplink(input) {
   var decoded = {};
   decoded.vcc = (input.bytes[0] + 200)/100;
-  if(input.bytes[1] != 255){
-    decoded.humidity = input.bytes[1]; 
-    decoded.humidity &= ~(1 << 7);
-    if(input.bytes[1] >> 7 == 1) { decoded.humidity +=0.5 }
-  }
-  if(input.bytes[2] != 255 || input.bytes[3] != 255) decoded.temperature = ((input.bytes[2]<<24>>16 | input.bytes[3]) / 10);
-  
+  decoded.watchdog = input.bytes[1]; 
+  decoded.door_state = input.bytes[2];
+    
   return {
     data: decoded,
     warnings: [],

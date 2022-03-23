@@ -10,8 +10,7 @@ void PowerDownUpdateMicros()
     extern volatile unsigned long timer0_overflow_count;
     PowerDown();
     cli();
-    // LMIC uses micros() to keep track of the duty cycle, so
-    // hack timer0_overflow for a rude adjustment:  
+    // LMIC uses micros() to keep track of the duty cycle, so hack timer0_overflow for a rude adjustment:  
     timer0_overflow_count+= 8 * 64 * clockCyclesPerMicrosecond();
     sei();
 }

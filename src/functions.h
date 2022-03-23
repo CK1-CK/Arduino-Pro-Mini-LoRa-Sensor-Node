@@ -5,8 +5,7 @@
 #include <Arduino.h>
 
 void Setup_Pins(void);
-void Blink_Info_LED(void);
+void Blink_Info_LED(unsigned int, unsigned int);
 long ReadVcc(void);
-void ReadDHTSensor(void);
 void PrintResetReason(void);
 #endif
