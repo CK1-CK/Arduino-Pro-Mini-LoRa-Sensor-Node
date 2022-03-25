@@ -15,7 +15,7 @@ const lmic_pinmap lmic_pins = {
     .dio = {PIN_LMIC_DIO0, PIN_LMIC_DIO1, PIN_LMIC_DIO2},
 };
 
-static uint8_t LORA_DATA[4];
+static uint8_t LORA_DATA[3];
 
 // Schedule TX every this many seconds (might become longer due to duty cycle limitations).
 const unsigned TX_INTERVAL = LORA_TX_INTERVAL;
@@ -207,7 +207,6 @@ void LoRaWANGetData()
     LORA_DATA[0] = vcc; //VCC Voltage
     LORA_DATA[1] = watchdog; //WatchDog
     LORA_DATA[2] = door_state; //Door open/closed
-    LORA_DATA[3] = 0xff; //EOF
 }
 
 void LoRaWANVersion()
