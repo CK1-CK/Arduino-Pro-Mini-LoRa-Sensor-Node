@@ -1,4 +1,4 @@
-# Arduino Pro Mini TTN LoRaWAN sensor node
+# Arduino Pro Mini TTN LoRaWAN Door Switch node (Alarm System)
 
 <img src="img/case_open.jpg">
 
