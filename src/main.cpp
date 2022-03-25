@@ -14,7 +14,7 @@ void interruptDoorFunction() //Interrupt Function for DoorSwitch
   door_state = digitalRead(PIN_DOOR_SWITCH);
   watchdog=0; //Real Alarm
 
-  //Lora Paket senden
+  //Send Lora Package
   LoRaWANDo_send(&sendjob);
 
   watchdog=1; //Restet Watchdog
