@@ -9,7 +9,7 @@ void PowerDownUpdateMicros()
 {
     extern volatile unsigned long timer0_overflow_count;
     PowerDown();
-    cli();
+    //cli();
     // LMIC uses micros() to keep track of the duty cycle, so hack timer0_overflow for a rude adjustment:  
     timer0_overflow_count+= 8 * 64 * clockCyclesPerMicrosecond();
     sei();
@@ -20,7 +20,7 @@ void PowerDown()
   ADCSRA &= ~(1<<ADEN);                 // ADC Disable for power saving
   
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // Use the Power Down sleep mode
-  cli();                                // Disable interrupts
+  //cli();                                // Disable interrupts
   WDTCSR |= (1<<WDIE);                  // WDTIE: Watchdog Timer Interrupt Enable
   sleep_enable();                       // Sets the Sleep Enable bit in the MCUCR Register (SE BIT)
   sleep_bod_disable();                  // Disable Brown-Out Detection
@@ -35,7 +35,7 @@ void PowerDown()
 
 void PowerDownSetupWatchdog()
 {
-  cli(); // Disable global interrupts
+  //cli(); // Disable global interrupts
   MCUSR &= ~(1<<WDRF); // Clear WDRF: Watchdog Reset Flag
   WDTCSR |= (1<<WDCE) | (1<<WDE); // WDCE: Watchdog Change Enable, WDE: Watchdog System Reset Enable
 
