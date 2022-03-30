@@ -17,7 +17,7 @@ void interruptDoorFunction() //Interrupt Function for DoorSwitch
   //Send Lora Package
   LoRaWANDo_send(&sendjob);
 
-  watchdog=1; //Restet Watchdog
+  watchdog=1; //Reset Watchdog
 }
 
 void setup()
