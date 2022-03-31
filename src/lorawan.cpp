@@ -56,7 +56,11 @@ void LoRaWANDo_send(osjob_t *j)
 
         // Prepare upstream data transmission at the next possible time.
         LMIC_setTxData2(1, LORA_DATA, sizeof(LORA_DATA), 0);
-        Serial.println(F("Packet queued"));
+        Serial.println(F("Packet queued - Payload: "));
+        for (size_t i = 0; i < sizeof(LORA_DATA); i++)
+        {
+            Serial.print(LORA_DATA[i], HEX);
+        }
     }
     // Next TX is scheduled after TX_COMPLETE event.
 }
@@ -203,10 +207,10 @@ void LoRaWANDo(void)
 void LoRaWANGetData()
 {
     uint8_t vcc = (ReadVcc() / 10) - 200;
-   
-    LORA_DATA[0] = vcc; //VCC Voltage
-    LORA_DATA[1] = watchdog; //WatchDog
-    LORA_DATA[2] = door_state; //Door open/closed
+
+    LORA_DATA[0] = vcc;        // VCC Voltage
+    LORA_DATA[1] = watchdog;   // WatchDog
+    LORA_DATA[2] = door_state; // Door open/closed
 }
 
 void LoRaWANVersion()
