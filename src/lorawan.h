@@ -31,5 +31,6 @@ void LoRaWANDo_send(osjob_t *j);
 void LoRaWANDo(void);
 void LoRaWANGetData(void);
 void LoRaWANVersion(void);
+void disableDeepSleep(void);
 
 #endif
