@@ -10,21 +10,23 @@
 void interruptDoorFunction() // Interrupt Function for DoorSwitch
 {
 
-  if ((millis() - alteZeit) > entprellZeit) //Debouncing/Entprellung Switch
+  if ((millis() - oldTime) > debounceTime) // Debouncing/Entprellung Switch
   {
     door_state = digitalRead(PIN_DOOR_SWITCH);
     watchdog = 0; // Real Alarm
 
-    //Debug
-    //Serial.print("Interrupt Routine: DoorState: ");
-    //Serial.println(door_state, DEC);
+    // Debug
+    // Serial.print("Interrupt Routine: DoorState: ");
+    // Serial.println(door_state, DEC);
+
+    disableDeepSleep();
 
     // Send Lora Package
     LoRaWANDo_send(&sendjob);
 
     watchdog = 1; // Reset Watchdog
 
-    alteZeit = millis(); // letzte Schaltzeit merken
+    oldTime = millis(); // letzte Schaltzeit merken
   }
 }
 
