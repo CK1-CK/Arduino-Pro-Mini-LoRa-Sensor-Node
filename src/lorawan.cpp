@@ -168,8 +168,8 @@ void onEvent(ev_t ev)
 
         // Schedule next transmission
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
-        GO_DEEP_SLEEP = true;
         resetToDefault();
+        //GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
 
         break;
     case EV_LOST_TSYNC:
