@@ -32,5 +32,7 @@ void LoRaWANDo(void);
 void LoRaWANGetData(void);
 void LoRaWANVersion(void);
 void disableDeepSleep(void);
+void setTX_Interval(unsigned);
+unsigned getTX_Interval(void);
 
 #endif

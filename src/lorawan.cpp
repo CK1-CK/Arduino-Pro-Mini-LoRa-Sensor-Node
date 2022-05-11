@@ -18,13 +18,32 @@ const lmic_pinmap lmic_pins = {
 static uint8_t LORA_DATA[3];
 
 // Schedule TX every this many seconds (might become longer due to duty cycle limitations).
-const unsigned TX_INTERVAL = LORA_TX_INTERVAL;
+unsigned TX_INTERVAL = LORA_TX_INTERVAL;
 
 void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
 bool GO_DEEP_SLEEP = false;
+
+void setTX_Interval(unsigned inter)
+{
+    TX_INTERVAL = inter;
+}
+
+unsigned getTX_Interval()
+{
+    return TX_INTERVAL;
+}
+
+void resetToDefault()
+{
+    attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE); // Enable Interrupt Function for DoorSwitch
+    Serial.println("Interrupt Routine (Doorswitch) enabled.");
+
+    door_state = digitalRead(PIN_DOOR_SWITCH);
+    setTX_Interval(LORA_TX_INTERVAL); // Reset Lora Interval
+}
 
 void LoRaWANSetup()
 {
@@ -150,6 +169,7 @@ void onEvent(ev_t ev)
         // Schedule next transmission
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
         GO_DEEP_SLEEP = true;
+        resetToDefault();
 
         break;
     case EV_LOST_TSYNC:
