@@ -30,7 +30,7 @@ void CheckDoorStateAndSendLoraPackage()
     Serial.println("Interrupt Routine disabled.");
 
     disableDeepSleep();
-    setTX_Interval(10); // Send Lora Package during the next n seconds
+    setTX_Interval(10); // Try to send Lora Package during the next n seconds
 
     // Queue Lora Package
     LoRaWANDo_send(&sendjob);
