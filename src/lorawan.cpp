@@ -166,10 +166,11 @@ void onEvent(ev_t ev)
             Serial.println(F(" bytes of payload"));
         }
 
+        resetToDefault();
+
         // Schedule next transmission
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
-        resetToDefault();
-        //GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
+        // GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
 
         break;
     case EV_LOST_TSYNC:
@@ -227,7 +228,7 @@ void LoRaWANDo(void)
 
 void disableDeepSleep()
 {
-    GO_DEEP_SLEEP=false;
+    GO_DEEP_SLEEP = false;
 }
 
 void LoRaWANGetData()
