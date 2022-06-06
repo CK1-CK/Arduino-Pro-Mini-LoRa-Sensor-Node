@@ -14,11 +14,12 @@ void interruptDoorFunction() // Interrupt Function for DoorSwitch
   {
     door_state = digitalRead(PIN_DOOR_SWITCH);
     watchdog = 0;       // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
-    oldTime = millis(); // Remember last run time.
-
+    
     // Debug
-    Serial.print("Interrupt Routine: DoorState: ");
-    Serial.println(door_state, DEC);
+    //Serial.print("Interrupt Routine: DoorState: ");
+    //Serial.println(door_state, DEC);
+
+    oldTime = millis(); // Remember last run time.
   }
 }
 
