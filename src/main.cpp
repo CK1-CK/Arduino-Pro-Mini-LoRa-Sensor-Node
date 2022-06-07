@@ -10,28 +10,23 @@
 
 void interruptDoorFunction() // Interrupt Function for DoorSwitch
 {
-  if ((millis() - oldTime) > debounceTime) // Debouncing/Entprellung Switch
-  {
-    door_state = digitalRead(PIN_DOOR_SWITCH);
-    watchdog = 0;       // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
-    
-    // Debug
-    //Serial.print("Interrupt Routine: DoorState: ");
-    //Serial.println(door_state, DEC);
+  door_state = 0;
+  watchdog = 0; // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
 
-    oldTime = millis(); // Remember last run time.
-  }
+  // Debug
+  // Serial.print("Interrupt Routine: DoorState: ");
+  // Serial.println(door_state, DEC);
 }
 
 void CheckDoorStateAndSendLoraPackage()
 {
-  if (watchdog == 0 && door_state == 0)
-  {
-    detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
-    Serial.println("Interrupt Routine disabled.");
+  Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
+  detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
 
+  if (watchdog == 0) // Real Alarm?
+  {
     disableDeepSleep();
-    //setTX_Interval(10); // Try to send Lora Package during the next n seconds
+    // setTX_Interval(10); // Try to send Lora Package during the next n seconds
 
     // Queue Lora Package
     LoRaWANDo_send(&sendjob);
@@ -40,8 +35,6 @@ void CheckDoorStateAndSendLoraPackage()
     Serial.print("DoorState: ");
     Serial.println(door_state, DEC);
   }
-
-  watchdog = 1; // Reset Watchdog
 }
 
 void setup()
@@ -58,7 +51,7 @@ void setup()
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   LoRaWANSetup();
 
-  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE); // Interrupt Function for DoorSwitch
+  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Interrupt Function for DoorSwitch
 }
 
 void loop()
