@@ -38,11 +38,14 @@ unsigned getTX_Interval()
 
 void resetToDefault()
 {
-    attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, CHANGE); // Enable Interrupt Function for DoorSwitch
-    Serial.println("Interrupt Routine (Doorswitch) enabled.");
-
     door_state = digitalRead(PIN_DOOR_SWITCH);
     setTX_Interval(LORA_TX_INTERVAL); // Reset Lora Interval
+    watchdog = 1;                     // Reset Watchdog
+
+    Serial.println("Enabled: Interrupt Routine (DoorSwitch).");
+    attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Enable Interrupt Function for DoorSwitch
+
+    Serial.println("Reset!");
 }
 
 void LoRaWANSetup()
