@@ -13,5 +13,7 @@ see payload_formatter folder
 ## LMIC MCCI Lib - EU Configuration
 
 .pio\libdeps\pro8MHzatmega328\MCCI LoRaWAN LMIC library\project_config\lmic_project_config.h
-    - #define CFG_eu868 1
-    - #define CFG_sx1276_radio 1
+
+    #define CFG_eu868 1
+    
+    #define CFG_sx1276_radio 1
