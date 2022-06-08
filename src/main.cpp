@@ -16,13 +16,13 @@ void interruptDoorFunction() // Interrupt Function for DoorSwitch
   // Debug
   // Serial.print("Interrupt Routine: DoorState: ");
   // Serial.println(door_state, DEC);
+
+  Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
+  detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
 }
 
 void CheckDoorStateAndSendLoraPackage()
 {
-  Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
-  detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
-
   if (watchdog == 0) // Real Alarm?
   {
     disableDeepSleep();
