@@ -24,10 +24,7 @@ void interruptDoorFunction() // Interrupt Function for DoorSwitch
 void CheckDoorStateAndSendLoraPackage()
 {
   if (watchdog == 0) // Real Alarm?
-  {
-    disableDeepSleep();
-    // setTX_Interval(10); // Try to send Lora Package during the next n seconds
-
+  {  
     // Queue Lora Package
     LoRaWANDo_send(&sendjob);
 
@@ -50,6 +47,7 @@ void setup()
   Setup_Pins();
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   LoRaWANSetup();
+  disableDeepSleep(); //DeepSleep Disable
 
   attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Interrupt Function for DoorSwitch
 }
