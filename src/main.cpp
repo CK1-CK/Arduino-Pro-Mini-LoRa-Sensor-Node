@@ -17,7 +17,7 @@ void interruptDoorFunction() // Interrupt Function for DoorSwitch
   // Serial.print("Interrupt Routine: DoorState: ");
   // Serial.println(door_state, DEC);
 
-  Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
+  //Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
   detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
 }
 
@@ -49,7 +49,7 @@ void setup()
   LoRaWANSetup();
   disableDeepSleep(); //DeepSleep Disable
 
-  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Interrupt Function for DoorSwitch
+  attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Enable Interrupt Function for DoorSwitch
 }
 
 void loop()
