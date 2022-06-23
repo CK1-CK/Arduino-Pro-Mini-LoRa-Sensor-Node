@@ -10,15 +10,20 @@
 
 void interruptDoorFunction() // Interrupt Function for DoorSwitch
 {
-  door_state = 0;
-  watchdog = 0; // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
+  if ((millis() - oldTime) > debounceTime) // Debouncing/Entprellung Switch
+  {
+    door_state = 0;
+    watchdog = 0; // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
 
-  // Debug
-  // Serial.print("Interrupt Routine: DoorState: ");
-  // Serial.println(door_state, DEC);
+    // Debug
+    // Serial.print("Interrupt Routine: DoorState: ");
+    // Serial.println(door_state, DEC);
 
-  //Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
-  detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
+    // Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
+    detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
+
+    oldTime = millis(); // Remember last run time.
+  }
 }
 
 void CheckDoorStateAndSendLoraPackage()
