@@ -10,7 +10,13 @@
 
 void interruptDoorFunction() // Interrupt Function for DoorSwitch
 {
-  if ((millis() - oldTime) > debounceTime) // Debouncing/Entprellung Switch
+  long diff = millis() - oldTime;
+  if (diff < 0) //The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
+  {
+    diff=debounceTime;
+  }
+
+  if (millis() - oldTime >= debounceTime) // Debouncing/Entprellung Switch
   {
     door_state = 0;
     watchdog = 0; // Real Alarm  // Watchdog/Heartbeat, Differentiation between watchdog and real alarm.   1=WatchDogSignal 0=Real DoorAlarm
