@@ -8,6 +8,8 @@
 #include "version_build.h"
 #include "settings.h"
 
+unsigned int test=0;
+
 void interruptDoorFunction() // Interrupt Function for DoorSwitch
 {
   if (millis() - oldTime > debounceTime) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
@@ -18,6 +20,9 @@ void interruptDoorFunction() // Interrupt Function for DoorSwitch
     // Debug
     // Serial.print("Interrupt Routine: DoorState: ");
     // Serial.println(door_state, DEC);
+
+    Serial.print("Interrupt Routine: WatchDog: ");
+    Serial.println(watchdog, DEC);
 
     // Serial.println("Disabled: Interrupt Routine (DoorSwitch).");
     detachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH)); // Disable Interrupt Function for DoorSwitch
@@ -34,10 +39,14 @@ void CheckDoorStateAndSendLoraPackage()
     LoRaWANDo_send(&sendjob);
 
     // Debug
-    Serial.print("DoorState: ");
-    Serial.println(door_state, DEC);
+    // Serial.print("DoorState: ");
+    // Serial.println(door_state, DEC);
 
     watchdog = 1; // Reset Watchdog
+
+    //Debug
+    Serial.println("Scheisse!!");
+    Serial.println(test++, DEC);
   }
 }
 
@@ -61,6 +70,10 @@ void setup()
 
 void loop()
 {
-  CheckDoorStateAndSendLoraPackage();
+  if (!os_queryTimeCriticalJobs(5000))
+  {
+    CheckDoorStateAndSendLoraPackage();
+  }
+
   LoRaWANDo();
 }
