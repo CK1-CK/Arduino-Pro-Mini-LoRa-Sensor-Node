@@ -42,10 +42,10 @@ void resetToDefault()
     setTX_Interval(LORA_TX_INTERVAL); // Reset Lora Interval
     watchdog = 1;                     // Reset Watchdog
 
-    Serial.println("Enabled: Interrupt Routine (DoorSwitch).");
+    //Serial.println("Enabled: Interrupt Routine (DoorSwitch).");
     attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Enable Interrupt Function for DoorSwitch
 
-    Serial.println("Reset!");
+    Serial.println("resetToDefault");
 }
 
 void LoRaWANSetup()
@@ -71,6 +71,7 @@ void LoRaWANDo_send(osjob_t *j)
     if (LMIC.opmode & OP_TXRXPEND)
     {
         Serial.println(F("OP_TXRXPEND, not sending"));
+        Serial.println(F("DEAD END")); //#todo vielleicht hier Reset wenn zb. 10000 aufrufe
     }
     else
     {
@@ -212,6 +213,7 @@ void onEvent(ev_t ev)
     default:
         Serial.print(F("Unknown event: "));
         Serial.println((unsigned)ev);
+        resetToDefault();
         break;
     }
 }
