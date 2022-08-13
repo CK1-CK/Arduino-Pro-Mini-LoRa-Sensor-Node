@@ -36,15 +36,6 @@ unsigned getTX_Interval()
     return TX_INTERVAL;
 }
 
-void resetToDefault()
-{
-    door_state = digitalRead(PIN_DOOR_SWITCH);
-    setTX_Interval(LORA_TX_INTERVAL); // Reset Lora Interval
-    watchdog = 1;                     // Reset Watchdog
-
-    Serial.println("resetToDefault");
-}
-
 void LoRaWANSetup()
 {
     Serial.println(F("LoRaWAN_Setup ..."));
@@ -132,6 +123,9 @@ void onEvent(ev_t ev)
                 Serial.print(nwkKey[i], HEX);
             }
             Serial.println("");
+
+            Serial.println("Alarmmode: Enabled!");
+            AlarmMode_Enabled = 1;
         }
         // Disable link check validation (automatically enabled
         // during join, but because slow data rates change max TX
@@ -166,9 +160,6 @@ void onEvent(ev_t ev)
             Serial.print(LMIC.dataLen);
             Serial.println(F(" bytes of payload"));
         }
-
-        resetToDefault();
-
         // Schedule next transmission
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
         // GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
@@ -210,7 +201,6 @@ void onEvent(ev_t ev)
     default:
         Serial.print(F("Unknown event: "));
         Serial.println((unsigned)ev);
-        resetToDefault();
         break;
     }
 }
