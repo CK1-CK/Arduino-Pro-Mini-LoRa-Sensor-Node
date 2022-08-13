@@ -42,9 +42,6 @@ void resetToDefault()
     setTX_Interval(LORA_TX_INTERVAL); // Reset Lora Interval
     watchdog = 1;                     // Reset Watchdog
 
-    //Serial.println("Enabled: Interrupt Routine (DoorSwitch).");
-    attachInterrupt(digitalPinToInterrupt(PIN_DOOR_SWITCH), interruptDoorFunction, FALLING); // Enable Interrupt Function for DoorSwitch
-
     Serial.println("resetToDefault");
 }
 
