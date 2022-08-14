@@ -20,23 +20,29 @@ void resetToDefaultValues()
 
 void CheckAlarm_SendAlarmLoraPackage()
 {
-  if ((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
+  if (((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) || (FirstAlarmAfterJoiningTTN && AlarmMode_Enabled)) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
   {
+
     if (watchdog == 0) // Real Alarm?
     {
-      // Queue Lora Package
-      LoRaWANDo_send(&sendjob); // Send Alarm Message
+      if (!os_queryTimeCriticalJobs(ms2osticks(500)))
+      {
+        // Queue Lora Package
+        LoRaWANDo_send(&sendjob); // Send Alarm Message
 
-      // Debug
-      Serial.println("Alarm Package queued!!");
+        // Debug
+        Serial.println("Alarm Package queued!!");
+
+        oldTime = millis(); // Remember last run time.
+      }
+      FirstAlarmAfterJoiningTTN = 0; // From here on, an alarm message is only sent every minSendInterval.
     }
-    oldTime = millis(); // Remember last run time.
   }
 }
 
 void CheckDoorStateForAlarm()
 {
-  if (digitalRead(PIN_DOOR_SWITCH) == 0)
+  if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmMode_Enabled)
   {
     door_counter++; // Doorswitch is zero --> Debouncing
   }
@@ -46,7 +52,7 @@ void CheckDoorStateForAlarm()
     door_state = 1;
   }
 
-  if (door_counter >= 40000) // Door must opened for some time --> Debouncing
+  if (door_counter >= 50000) // Door must opened for some time --> Debouncing
   {
     door_state = 0;    // Door open
     watchdog = 0;      // Real Alarm
