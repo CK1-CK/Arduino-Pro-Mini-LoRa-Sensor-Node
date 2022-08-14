@@ -23,6 +23,8 @@ void CheckAlarm_SendAlarmLoraPackage()
 
     if (watchdog == 0) // Real Alarm?
     {
+      LoRaWANDo(); // Run os_runloop_once() for LMIC OS
+
       if (!os_queryTimeCriticalJobs(ms2osticks(500)))
       {
         // Queue Lora Package
@@ -73,10 +75,10 @@ void setup()
   Setup_Pins();
   door_state = digitalRead(PIN_DOOR_SWITCH);
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
+  delay(3000);
 
   PrintResetReason();
   LoRaWANVersion();
-  delay(3000);
   PowerDownSetupWatchdog();
   LoRaWANSetup();
   disableDeepSleep(); // DeepSleep Disable
@@ -84,6 +86,9 @@ void setup()
 
 void loop() // Infinity Loop
 {
-  CheckDoorStateForAlarm();
+  if (!os_queryTimeCriticalJobs(ms2osticks(500)))
+  {
+    CheckDoorStateForAlarm();
+  }
   LoRaWANDo();
 }
