@@ -14,8 +14,6 @@ void resetToDefaultValues()
 {
   watchdog = 1;                              // Reset Watchdog
   door_state = digitalRead(PIN_DOOR_SWITCH); // Reset Doorstate
-
-  // Serial.println("resetToDefaultValues");
 }
 
 void CheckAlarm_SendAlarmLoraPackage()
