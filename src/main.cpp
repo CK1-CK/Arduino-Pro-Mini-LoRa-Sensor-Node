@@ -20,7 +20,7 @@ void resetToDefaultValues()
 
 void CheckAlarm_SendAlarmLoraPackage()
 {
-  if (((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) || (FirstAlarmAfterJoiningTTN && AlarmMode_Enabled)) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
+  if ((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
   {
 
     if (watchdog == 0) // Real Alarm?
@@ -35,7 +35,7 @@ void CheckAlarm_SendAlarmLoraPackage()
 
         oldTime = millis(); // Remember last run time.
       }
-      FirstAlarmAfterJoiningTTN = 0; // From here on, an alarm message is only sent every minSendInterval.
+      minSendIntervall = 600000; // Intervall to Send Alarm Pakages in ms  600000=10min - From here on, an alarm message is only sent every x ms.
     }
   }
 }
