@@ -20,7 +20,6 @@ void CheckAlarm_SendAlarmLoraPackage()
 {
   if ((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) // Debouncing/Entprellung Switch - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
   {
-
     if (watchdog == 0) // Real Alarm?
     {
       LoRaWANDo(); // Run os_runloop_once() for LMIC OS
@@ -33,9 +32,9 @@ void CheckAlarm_SendAlarmLoraPackage()
         // Debug
         Serial.println("Alarm Package queued!!");
 
-        oldTime = millis(); // Remember last run time.
+        oldTime = millis();        // Remember last run time.
+        minSendIntervall = 600000; // Intervall to Send Alarm Pakages in ms  600000=10min - From here on, an alarm message is only sent every x ms.
       }
-      minSendIntervall = 600000; // Intervall to Send Alarm Pakages in ms  600000=10min - From here on, an alarm message is only sent every x ms.
     }
   }
 }
@@ -50,6 +49,7 @@ void CheckDoorStateForAlarm()
   {
     door_counter = -1;
     door_state = 1;
+    minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms  180000=3min -> If door is closed reset to fast SendIntervall
   }
 
   if (door_counter >= 50000) // Door must opened for some time --> Debouncing
@@ -91,4 +91,5 @@ void loop() // Infinity Loop
     CheckDoorStateForAlarm();
   }
   LoRaWANDo();
+  os_getTime(); //probably not needed.
 }
