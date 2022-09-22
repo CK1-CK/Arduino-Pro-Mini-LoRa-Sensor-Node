@@ -14,8 +14,6 @@ void resetToDefaultValues()
 {
   watchdog = 1;                              // Reset Watchdog
   door_state = digitalRead(PIN_DOOR_SWITCH); // Reset Doorstate
-
-  // Serial.println("resetToDefaultValues");
 }
 
 void CheckAlarm_SendAlarmLoraPackage()
@@ -24,19 +22,26 @@ void CheckAlarm_SendAlarmLoraPackage()
   {
     if (watchdog == 0) // Real Alarm?
     {
-      // Queue Lora Package
-      LoRaWANDo_send(&sendjob); // Send Alarm Message
+      LoRaWANDo(); // Run os_runloop_once() for LMIC OS
 
-      // Debug
-      Serial.println("Alarm Package queued!!");
+      if (!os_queryTimeCriticalJobs(ms2osticks(500)))
+      {
+        // Queue Lora Package
+        LoRaWANDo_send(&sendjob); // Send Alarm Message
+
+        // Debug
+        Serial.println("Alarm Package queued!!");
+
+        oldTime = millis();        // Remember last run time.
+        minSendIntervall = 600000; // Intervall to Send Alarm Pakages in ms  600000=10min - From here on, an alarm message is only sent every x ms.
+      }
     }
-    oldTime = millis(); // Remember last run time.
   }
 }
 
 void CheckDoorStateForAlarm()
 {
-  if (digitalRead(PIN_DOOR_SWITCH) == 0)
+  if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmMode_Enabled)
   {
     door_counter++; // Doorswitch is zero --> Debouncing
   }
@@ -44,9 +49,10 @@ void CheckDoorStateForAlarm()
   {
     door_counter = -1;
     door_state = 1;
+    minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms  180000=3min -> If door is closed reset to fast SendIntervall
   }
 
-  if (door_counter >= 40000) // Door must opened for some time --> Debouncing
+  if (door_counter >= 50000) // Door must opened for some time --> Debouncing
   {
     door_state = 0;    // Door open
     watchdog = 0;      // Real Alarm
@@ -69,10 +75,10 @@ void setup()
   Setup_Pins();
   door_state = digitalRead(PIN_DOOR_SWITCH);
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
+  delay(3000);
 
   PrintResetReason();
   LoRaWANVersion();
-  delay(3000);
   PowerDownSetupWatchdog();
   LoRaWANSetup();
   disableDeepSleep(); // DeepSleep Disable
@@ -80,6 +86,10 @@ void setup()
 
 void loop() // Infinity Loop
 {
-  CheckDoorStateForAlarm();
+  if (!os_queryTimeCriticalJobs(ms2osticks(500)))
+  {
+    CheckDoorStateForAlarm();
+  }
   LoRaWANDo();
+  os_getTime(); //probably not needed.
 }
