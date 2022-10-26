@@ -35,7 +35,7 @@ void CheckAlarm_SendAlarmLoraPackage()
         oldTime = millis();     // Remember last run time.
         sended_AlarmPackages++; // Counter for sended Alarm Packages
 
-        if (sended_AlarmPackages <= 2) // Send n AlarmPackages to TTN with fast Intervall
+        if (sended_AlarmPackages < 2) // Send n AlarmPackages to TTN with fast Intervall
         {
           minSendIntervall = 30000; // Fast Intervall 30 Sek
         }
