@@ -73,6 +73,14 @@ void LoRaWANDo_send(osjob_t *j)
         }
         Serial.println(" ");
     }
+
+    os_clearCallback(&sendjob); // Clear the SendQueue
+
+    // Schedule next transmission
+    os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
+    // GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
+    Serial.println("Next Package is scheduled.");
+
     // Next TX is scheduled after TX_COMPLETE event.
 }
 
@@ -160,13 +168,6 @@ void onEvent(ev_t ev)
             Serial.print(LMIC.dataLen);
             Serial.println(F(" bytes of payload"));
         }
-
-        os_clearCallback(&sendjob); //Clear the SendQueue
-
-        // Schedule next transmission
-        os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
-        // GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
-        Serial.println("Next Package is scheduled.");
 
         break;
     case EV_LOST_TSYNC:
