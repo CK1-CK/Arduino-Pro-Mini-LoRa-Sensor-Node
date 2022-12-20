@@ -26,7 +26,6 @@ void CheckAlarm_SendAlarmLoraPackage()
     {
       if (!os_queryTimeCriticalJobs(ms2osticks(300)))
       {
-        
         os_setCallback(&sendjob, LoRaWANDo_send); // Queue Lora Package - Send Alarm Message
         LoRaWANDo(); //Run OS to process jobs
 
