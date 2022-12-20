@@ -26,9 +26,8 @@ void CheckAlarm_SendAlarmLoraPackage()
     {
       if (!os_queryTimeCriticalJobs(ms2osticks(300)))
       {
-        os_clearCallback(&sendjob); // Clear the SendQueue
-        LoRaWANDo_send(&sendjob);   // Queue Lora Package - Send Alarm Message
-        LoRaWANDo(); //Run os_runloop_once() for LMIC OS
+        
+        os_setCallback(&sendjob, LoRaWANDo_send); // Queue Lora Package - Send Alarm Message
 
         Serial.println("Alarm Package queued!!"); // Debug
 
@@ -63,8 +62,8 @@ void CheckDoorStateForAlarm()
 
   if (door_counter >= 50000) // Door must opened for some time --> Debouncing
   {
-    watchdog = 0;      // Real Alarm
-    door_state = 0;    // Door open
+    watchdog = 0;   // Real Alarm
+    door_state = 0; // Door open
 
     Serial.println("Door open!");
 
