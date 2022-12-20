@@ -28,7 +28,7 @@ void CheckAlarm_SendAlarmLoraPackage()
       {
         
         os_setCallback(&sendjob, LoRaWANDo_send); // Queue Lora Package - Send Alarm Message
-        LoRaWANDo(); //Run OS
+        LoRaWANDo(); //Run OS to process jobs
 
         Serial.println("Alarm Package queued!!"); // Debug
 
