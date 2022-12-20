@@ -99,6 +99,7 @@ void onEvent(ev_t ev)
         break;
     case EV_JOINED:
         Serial.println(F("EV_JOINED"));
+        LoRaWANDo_send(&sendjob);
 #ifndef DISABLE_JOIN
         {
             u4_t netid = 0;
