@@ -124,7 +124,7 @@ void onEvent(ev_t ev)
             Serial.println("");
 
             Serial.println("Alarmmode: Enabled!");
-            AlarmMode_Enabled = 1;
+            AlarmModeEnabled = 1;
         }
         // Disable link check validation (automatically enabled
         // during join, but because slow data rates change max TX
@@ -232,7 +232,7 @@ void LoRaWANGetData()
 
     LORA_DATA[0] = vcc;        // VCC Voltage
     LORA_DATA[1] = watchdog;   // WatchDog
-    LORA_DATA[2] = door_state; // Door open/closed
+    LORA_DATA[2] = doorState; // Door open/closed
 }
 
 void LoRaWANVersion()

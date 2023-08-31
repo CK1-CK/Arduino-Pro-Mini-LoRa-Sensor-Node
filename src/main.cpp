@@ -8,19 +8,19 @@
 #include "version_build.h"
 #include "settings.h"
 
-long door_counter = -1;
-int sended_AlarmPackages = 0;
+long doorCounter = -1;
+int counterAlarmPackages = 0;
 
 void resetToDefaultValues()
 {
   watchdog = 1;      // Reset Watchdog
-  door_state = 1;    // Reset Doorstate
-  door_counter = -1; // Reset DoorCounter
+  doorState = 1;    // Reset Doorstate
+  doorCounter = -1; // Reset DoorCounter
 }
 
 void CheckAlarm_SendAlarmLoraPackage()
 {
-  if ((millis() - oldTime > minSendIntervall) && AlarmMode_Enabled) // Limit for sending Lora Packages - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
+  if ((millis() - oldTime > minSendIntervall) && AlarmModeEnabled) // Limit for sending Lora Packages - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
   {
     if (watchdog == 0) // Real Alarm?
     {
@@ -32,9 +32,9 @@ void CheckAlarm_SendAlarmLoraPackage()
         Serial.println("Alarm Package queued!!"); // Debug
 
         oldTime = millis();     // Remember last run time.
-        sended_AlarmPackages++; // Counter for sended Alarm Packages
+        counterAlarmPackages++; // Counter for sent Alarm Packages
 
-        if (sended_AlarmPackages < 2) // Send n AlarmPackages to TTN with fast Intervall
+        if (counterAlarmPackages < 2) // Send n AlarmPackages to TTN with fast Intervall
         {
           minSendIntervall = 30000; // Fast Intervall 30 Sek
         }
@@ -49,21 +49,21 @@ void CheckAlarm_SendAlarmLoraPackage()
 
 void CheckDoorStateForAlarm()
 {
-  if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmMode_Enabled)
+  if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmModeEnabled)
   {
-    door_counter++; // Doorswitch is zero --> Debouncing
+    doorCounter++; // Doorswitch is zero --> Debouncing
   }
   else // Door is closed
   {
     resetToDefaultValues();
-    minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms  180000=3min -> If door is closed reset to normal SendIntervall
-    sended_AlarmPackages = 0;  // Rest Counter sended Alarm Packages
+    minSendIntervall = 20*60*1000; // Intervall to Send Alarm Pakages in ms  1200000=20min | 180000=3min -> If door is closed reset to normal SendIntervall
+    counterAlarmPackages = 0;  // Rest Counter sent Alarm Packages
   }
 
-  if (door_counter >= 50000) // Door must opened for some time --> Debouncing
+  if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
   {
     watchdog = 0;   // Real Alarm
-    door_state = 0; // Door open
+    doorState = 0; // Door open
 
     Serial.println("Door open!");
 
@@ -80,7 +80,7 @@ void setup()
   Serial.println("Builddate: " BUILD_DATE " " BUILD_TIME);
 
   Setup_Pins();
-  door_state = digitalRead(PIN_DOOR_SWITCH);
+  doorState = digitalRead(PIN_DOOR_SWITCH);
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   delay(3000);
 
@@ -91,11 +91,9 @@ void setup()
   disableDeepSleep(); // DeepSleep Disable
 }
 
+
 void loop() // Infinity Loop
 {
-  if (!os_queryTimeCriticalJobs(ms2osticks(500)))
-  {
-    CheckDoorStateForAlarm();
-  }
+  CheckDoorStateForAlarm();
   LoRaWANDo();
 }
