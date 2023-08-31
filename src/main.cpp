@@ -8,14 +8,14 @@
 #include "version_build.h"
 #include "settings.h"
 
-long door_counter = -1;
+long doorCounter = -1;
 int counterAlarmPackages = 0;
 
 void resetToDefaultValues()
 {
   watchdog = 1;      // Reset Watchdog
-  door_state = 1;    // Reset Doorstate
-  door_counter = -1; // Reset DoorCounter
+  doorState = 1;    // Reset Doorstate
+  doorCounter = -1; // Reset DoorCounter
 }
 
 void CheckAlarm_SendAlarmLoraPackage()
@@ -51,7 +51,7 @@ void CheckDoorStateForAlarm()
 {
   if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmModeEnabled)
   {
-    door_counter++; // Doorswitch is zero --> Debouncing
+    doorCounter++; // Doorswitch is zero --> Debouncing
   }
   else // Door is closed
   {
@@ -60,10 +60,10 @@ void CheckDoorStateForAlarm()
     counterAlarmPackages = 0;  // Rest Counter sent Alarm Packages
   }
 
-  if (door_counter >= 50000) // Door must opened for some time --> Debouncing
+  if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
   {
     watchdog = 0;   // Real Alarm
-    door_state = 0; // Door open
+    doorState = 0; // Door open
 
     Serial.println("Door open!");
 
@@ -80,7 +80,7 @@ void setup()
   Serial.println("Builddate: " BUILD_DATE " " BUILD_TIME);
 
   Setup_Pins();
-  door_state = digitalRead(PIN_DOOR_SWITCH);
+  doorState = digitalRead(PIN_DOOR_SWITCH);
   Blink_Info_LED(50, 15); // LED blink (The LED can only be used once at the beginning due to SPI PIN/collision)
   delay(3000);
 

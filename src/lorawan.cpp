@@ -232,7 +232,7 @@ void LoRaWANGetData()
 
     LORA_DATA[0] = vcc;        // VCC Voltage
     LORA_DATA[1] = watchdog;   // WatchDog
-    LORA_DATA[2] = door_state; // Door open/closed
+    LORA_DATA[2] = doorState; // Door open/closed
 }
 
 void LoRaWANVersion()
