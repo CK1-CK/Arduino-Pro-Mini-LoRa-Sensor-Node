@@ -124,7 +124,7 @@ void onEvent(ev_t ev)
             Serial.println("");
 
             Serial.println("Alarmmode: Enabled!");
-            AlarmMode_Enabled = 1;
+            AlarmModeEnabled = 1;
         }
         // Disable link check validation (automatically enabled
         // during join, but because slow data rates change max TX
