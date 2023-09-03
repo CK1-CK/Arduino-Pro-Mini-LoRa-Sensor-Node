@@ -18,11 +18,11 @@ void resetToDefaultValues()
   doorCounter = -1; // Reset DoorCounter
 }
 
-void SendAlarmLoraPackage() //Sends a Lora Package
+void SendAlarmLoraPackage() // Sends a Lora Package
 {
   if ((millis() - oldTime > minSendIntervall) && AlarmModeEnabled) // Limit for sending Lora Packages - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
   {
-    if (!os_queryTimeCriticalJobs(ms2osticks(300))) //Check for Time critical Job
+    if (!os_queryTimeCriticalJobs(ms2osticks(300))) // Check for Time critical Job
     {
       os_clearCallback(&sendjob);               // Clear the SendQueue
       os_setCallback(&sendjob, LoRaWANDo_send); // Queue Lora Package - Send Alarm Message
@@ -49,24 +49,24 @@ void CheckDoorStateForAlarm()
 {
   if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmModeEnabled)
   {
-    doorCounter++; // Doorswitch is zero --> Debouncing
+    doorCounter++;            // Doorswitch is zero --> Debouncing
+    
+    if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
+    {
+      watchdog = 0;  // Real Alarm
+      doorState = 0; // Door open
+
+      Serial.println("Door open!");
+
+      SendAlarmLoraPackage();
+      resetToDefaultValues();
+    }
   }
   else // Door is closed
   {
     resetToDefaultValues();
     minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms 180000=3min -> If door is closed reset to normal SendIntervall
     counterAlarmPackages = 0;  // Rest Counter sent Alarm Packages
-  }
-
-  if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
-  {
-    watchdog = 0;  // Real Alarm
-    doorState = 0; // Door open
-
-    Serial.println("Door open!");
-
-    SendAlarmLoraPackage();
-    resetToDefaultValues();
   }
 }
 
