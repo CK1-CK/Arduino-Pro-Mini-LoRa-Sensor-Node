@@ -165,7 +165,7 @@ void onEvent(ev_t ev)
         // Schedule next transmission
         os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send);
         // GO_DEEP_SLEEP = true; // if Deep_Sleep is activated, no Interrupts will work.
-        Serial.println("Next Package is scheduled.");
+        Serial.println("Next WatchDog Package is scheduled.");
 
         break;
     case EV_LOST_TSYNC:
