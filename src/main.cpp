@@ -7,6 +7,7 @@
 #include "version.h"
 #include "version_build.h"
 #include "settings.h"
+#include "lorawan.h"
 
 long doorCounter = -1;
 int counterAlarmPackages = 0;
@@ -42,20 +43,26 @@ void SendAlarmLoraPackage() // Sends a Lora Package
         minSendIntervall = 600000; // If the door remains permanently open: Intervall to Send Alarm Pakages in ms  600000=10min - From here on, an alarm message is only sent every x ms.
       }
     }
+    // Serial.println("os_queryTimeCriticalJobs - EXIT"); // Debug
   }
+  // Serial.println("SendAlarmLoraPackage - EXIT"); // Debug
+}
+
+void setAlarmState()
+{
+  watchdog = 0;  // Real Alarm
+  doorState = 0; // Door open
 }
 
 void CheckDoorStateForAlarm()
 {
   if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmModeEnabled)
   {
-    doorCounter++;            // Doorswitch is zero --> Debouncing
-    
+    doorCounter++; // Doorswitch is zero --> Debouncing
+
     if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
     {
-      watchdog = 0;  // Real Alarm
-      doorState = 0; // Door open
-
+      setAlarmState();
       Serial.println("Door open!");
 
       SendAlarmLoraPackage();
@@ -64,6 +71,14 @@ void CheckDoorStateForAlarm()
   }
   else // Door is closed
   {
+
+    if (doorState == 0)
+    {
+      os_clearCallback(&sendjob);                                                             // Clear the SendQueue
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send); // Schedule next transmission
+      Serial.println("Next WatchDog Package is scheduled.");                                  // Serial Print - Debug
+    }
+
     resetToDefaultValues();
     minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms 180000=3min -> If door is closed reset to normal SendIntervall
     counterAlarmPackages = 0;  // Rest Counter sent Alarm Packages
