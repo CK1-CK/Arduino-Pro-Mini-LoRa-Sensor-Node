@@ -7,11 +7,11 @@
 #include "version.h"
 #include "version_build.h"
 #include "settings.h"
-#include "lorawan.h"
 
 long doorCounter = -1;
 int counterAlarmPackages = 0;
 
+// Resets all Alarm values to default
 void resetToDefaultValues()
 {
   watchdog = 1;     // Reset Watchdog
@@ -19,6 +19,14 @@ void resetToDefaultValues()
   doorCounter = -1; // Reset DoorCounter
 }
 
+// Set Alarm State Values
+void setAlarmState()
+{
+  watchdog = 0;  // Real Alarm
+  doorState = 0; // Door open
+}
+
+// Check runtimes and sends Lora Packages
 void SendAlarmLoraPackage() // Sends a Lora Package
 {
   if ((millis() - oldTime > minSendIntervall) && AlarmModeEnabled) // Limit for sending Lora Packages - The millis() function will overflow (go back to zero), after approximately 50 days. (Max value = 4.294.967.295)
@@ -48,19 +56,17 @@ void SendAlarmLoraPackage() // Sends a Lora Package
   // Serial.println("SendAlarmLoraPackage - EXIT"); // Debug
 }
 
-void setAlarmState()
-{
-  watchdog = 0;  // Real Alarm
-  doorState = 0; // Door open
-}
-
+// Door Check Function. If door is open (Denbouncing) send Lora Alarm Package
 void CheckDoorStateForAlarm()
 {
   if (digitalRead(PIN_DOOR_SWITCH) == 0 && AlarmModeEnabled)
   {
-    doorCounter++; // Doorswitch is zero --> Debouncing
+    if (doorCounter < DOOR_COUNTER) // Limits the DoorCounter and prevent a variable overflow
+    {
+      doorCounter++; // Doorswitch is zero --> Debouncing
+    }
 
-    if (doorCounter >= 50000) // Door must opened for some time --> Debouncing
+    if (doorCounter >= DOOR_COUNTER) // Door must opened for some time --> Debouncing
     {
       setAlarmState();
       Serial.println("Door open!");
@@ -72,19 +78,20 @@ void CheckDoorStateForAlarm()
   else // Door is closed
   {
 
-    if (doorState == 0)
+    if (doorState == 0) // Runs once if the door is closed. Creates a new WatchDog Package
     {
       os_clearCallback(&sendjob);                                                             // Clear the SendQueue
-      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL), LoRaWANDo_send); // Schedule next transmission
+      os_setTimedCallback(&sendjob, os_getTime() + sec2osticks(TX_INTERVAL/2), LoRaWANDo_send); // Schedule next transmission
       Serial.println("Next WatchDog Package is scheduled.");                                  // Serial Print - Debug
     }
 
     resetToDefaultValues();
-    minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms 180000=3min -> If door is closed reset to normal SendIntervall
+    minSendIntervall = 180000; // Intervall to Send Alarm Pakages in ms 180000=3min --> If door is closed reset to normal SendIntervall --> Alarm system reactivated after 3 minutes.
     counterAlarmPackages = 0;  // Rest Counter sent Alarm Packages
   }
 }
 
+//Setup Function (Serial Interface, Lora Interface)
 void setup()
 {
   Serial.begin(115200);
@@ -104,6 +111,7 @@ void setup()
   disableDeepSleep(); // DeepSleep Disable
 }
 
+// Infinite Loop
 void loop() // Infinity Loop
 {
   CheckDoorStateForAlarm();
